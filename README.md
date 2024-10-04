@@ -6,8 +6,8 @@ Code for Weighted First-Order Model Counting with DAG, Connected, Tree and Fores
 Clone the repository and install the requirements:
 
 ```
-git clone https://github.com/dbizzaro/WFOMC.git
-cd WFOMC
+git clone https://github.com/dbizzaro/WFOMC-beyond-FOL.git
+cd WFOMC-beyond-FOL
 conda create --name wfomc_env --file environment.txt
 ```
 
