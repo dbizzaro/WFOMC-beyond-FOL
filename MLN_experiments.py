@@ -1,5 +1,6 @@
 from wfomc import *
 from matplotlib import pyplot as plt
+from matplotlib.ticker import MaxNLocator
 import symengine
 import sympy
 import numpy as np
@@ -22,41 +23,55 @@ class MLN_experiment:
             self.axiom = 'DAG'
             self.axiom_predicate = 'R'
             self.query_predicate = 'R'
+        elif experiment_name == 'DAG-edges-smokers':
+            self.unary_predicates = ['S']
+            self.binary_predicates = ['F', 'P']
+            self.expression = "~Fxx & (Fxy >> ~Fyx) & \
+                                (Pxy >> ((Fxy & Sx) >> Sy)) & \
+                                (Pxy << ((Fxy & Sx) >> Sy))"
+            self.axiom = 'DAG'
+            self.axiom_predicate = 'F'
+            self.query_predicate = 'F'
         elif experiment_name == 'hard-DAG':
-            self.unary_predicates = ['A']
-            self.binary_predicates = ['C']
-            self.expression = "~Cxx & \
-                                (Rxy >> (Cxy >> ((Ax >> Ay) & (Ay >> Ax)))) & \
-                                (Rxy << (Cxy >> ((Ax >> Ay) & (Ay >> Ax))))"
+            self.unary_predicates = ['S']
+            self.binary_predicates = ['F', 'P']
+            self.expression = "~Fxx & (Fxy >> ~Fyx) & \
+                                (Pxy >> ((Fxy & Sx) >> Sy)) & \
+                                (Pxy << ((Fxy & Sx) >> Sy))"
             self.axiom = 'DAG'
-            self.axiom_predicate = 'C'
-            self.query_predicate = 'A'
-        elif experiment_name == 'soft-DAG':
-            self.unary_predicates = ['A']
-            self.binary_predicates = ['C', 'R', 'W', 'Z']
-            self.expression = "~Cxx & \
-                                (Rxy >> (Cxy >> ((Ax >> Ay) & (Ay >> Ax)))) & \
-                                (Rxy << (Cxy >> ((Ax >> Ay) & (Ay >> Ax)))) & \
-                                (Zxy >> ((Wxy >> Cxy) & (Wxy << Cxy))) & \
-                                (Zxy << ((Wxy >> Cxy) & (Wxy << Cxy)))"
-            self.axiom = 'DAG'
-            self.axiom_predicate = 'W'
-            self.query_predicate = 'A'
+            self.axiom_predicate = 'F'
+            self.query_predicate = 'S'
+        elif experiment_name == 'connected-edges':
+            self.unary_predicates = []
+            self.binary_predicates = ['R']
+            self.expression = "~Rxx & (Rxy >> Ryx)"
+            self.axiom = 'connected'
+            self.axiom_predicate = 'R'
+            self.query_predicate = 'R'
+        elif experiment_name == 'connected-edges-smokers':
+            self.unary_predicates = ['S']
+            self.binary_predicates = ['F', 'P']
+            self.expression = "~Fxx & (Fxy >> Fyx) & \
+                                (Pxy >> ((Fxy & Sx) >> Sy)) & \
+                                (Pxy << ((Fxy & Sx) >> Sy))"
+            self.axiom = 'connected'
+            self.axiom_predicate = 'F'
+            self.query_predicate = 'F'
         elif experiment_name == 'hard-connected':
             self.unary_predicates = ['S']
-            self.binary_predicates = ['F', 'R']
+            self.binary_predicates = ['F', 'P']
             self.expression = "~Fxx & (Fxy >> Fyx) & \
-                                (Rxy >> ((Fxy & Sx) >> Sy)) & \
-                                (Rxy << ((Fxy & Sx) >> Sy))"
+                                (Pxy >> ((Fxy & Sx) >> Sy)) & \
+                                (Pxy << ((Fxy & Sx) >> Sy))"
             self.axiom = 'connected'
             self.axiom_predicate = 'F'
             self.query_predicate = 'S'
         elif experiment_name == 'soft-connected':
             self.unary_predicates = ['S']
-            self.binary_predicates = ['F', 'R', 'W', 'Z']
+            self.binary_predicates = ['F', 'P', 'W', 'Z']
             self.expression = "~Fxx & (Fxy >> Fyx) & \
-                                (Rxy >> ((Fxy & Sx) >> Sy)) & \
-                                (Rxy << ((Fxy & Sx) >> Sy)) & \
+                                (Pxy >> ((Fxy & Sx) >> Sy)) & \
+                                (Pxy << ((Fxy & Sx) >> Sy)) & \
                                 (Zxy >> ((Wxy >> Fxy) & (Wxy << Fxy))) & \
                                 (Zxy << ((Wxy >> Fxy) & (Wxy << Fxy)))"
             self.axiom = 'connected'
@@ -69,13 +84,24 @@ class MLN_experiment:
             self.axiom = 'forest'
             self.axiom_predicate = 'R'
             self.query_predicate = 'R'
-        elif experiment_name == 'connected-edges':
-            self.unary_predicates = []
-            self.binary_predicates = ['R']
-            self.expression = "~Rxx & (Rxy >> Ryx)"
-            self.axiom = 'connected'
-            self.axiom_predicate = 'R'
-            self.query_predicate = 'R'
+        elif experiment_name == 'forest-edges-smokers':
+            self.unary_predicates = ['S']
+            self.binary_predicates = ['F', 'P']
+            self.expression = "~Fxx & (Fxy >> Fyx) & \
+                                (Pxy >> ((Fxy & Sx) >> Sy)) & \
+                                (Pxy << ((Fxy & Sx) >> Sy))"
+            self.axiom = 'forest'
+            self.axiom_predicate = 'F'
+            self.query_predicate = 'F'
+        elif experiment_name == 'hard-forest':
+            self.unary_predicates = ['S']
+            self.binary_predicates = ['F', 'P']
+            self.expression = "~Fxx & (Fxy >> Fyx) & \
+                                (Pxy >> ((Fxy & Sx) >> Sy)) & \
+                                (Pxy << ((Fxy & Sx) >> Sy))"
+            self.axiom = 'forest'
+            self.axiom_predicate = 'F'
+            self.query_predicate = 'S'
 
     def without_axiom(self, cardinality_constraints_binary = {}):
         if cardinality_constraints_binary != {}:
@@ -85,10 +111,24 @@ class MLN_experiment:
         experiment.axiom = ''
         return experiment
 
-    def produce_MLN_formula(self, auxiliary_predicate, wmc_weight):
-        self.expression += ' & ((' + self.expression + ') >> ' + auxiliary_predicate + 'xy) & (' + auxiliary_predicate + 'xy >> (' + self.expression + '))'
-        self.weights[auxiliary_predicate] = wmc_weight
-        self.binary_predicates.append(auxiliary_predicate)
+    def produce_MLN_formula(self, expression, auxiliary_predicate, wmc_weight):
+        new_object = MLN_experiment(self.experiment_name, self.weights, self.predicates_to_rescale, self.cardinality_constraints_binary, self.n_digits)
+        new_object.expression += ' & ((' + expression + ') >> ' + auxiliary_predicate + 'xy) & (' + auxiliary_predicate + 'xy >> (' + expression + '))'
+        new_object.weights[auxiliary_predicate] = wmc_weight
+        new_object.binary_predicates.append(auxiliary_predicate)
+        return new_object
+
+
+    def with_soft_constraint(self, auxiliary_1 = 'Z', auxiliary_2 = 'W', weight_1 = (3,0), weight_2 = (0,0)):
+        new_object = self.produce_MLN_formula(f'({auxiliary_2}xy >> {self.query_predicate}xy) & ({auxiliary_2}xy << {self.query_predicate}xy)', auxiliary_1, weight_1)
+        if weight_2 != None:
+            new_object.weights[auxiliary_2] = weight_2
+        else:
+            new_object.weights[auxiliary_2] = new_object.weights[new_object.query_predicate]
+        new_object.binary_predicates.append(auxiliary_2)
+        new_object.axiom_predicate = auxiliary_2
+        return new_object
+
     
     
     def compute_weights(self, n):
@@ -115,6 +155,7 @@ class MLN_experiment:
         total = WFOMC(language, formula, n)
         #total_axiom = WFOMC(language, formula_axiom, n)
         for cardinality_query in range(n+1):
+            print(cardinality_query)
             formula_query = Formula(self.expression, self.axiom, self.axiom_predicate, {self.query_predicate+'x': cardinality_query}, self.cardinality_constraints_binary)
             #formula_query_axiom = Formula(self.expression, self.axiom, self.axiom_predicate, {self.query_predicate+'x': cardinality_query}) #cardinality_constraints_binary=self.cardinality_constraints_binary)
             value = float(sympy.Rational(WFOMC(language, formula_query, n)/total))
@@ -136,16 +177,20 @@ class MLN_experiment:
         total = WFOMC(language, formula, n)
         #total_axiom = WFOMC(language, formula_axiom, n)
         if max_cardinality is None:
-            max_cardinality = n**2
+            max_cardinality = n*(n-1)            
         for cardinality_query in range(max_cardinality+1):
             if (cardinality_query % 2 == 0) or not only_even: 
                 if self.query_predicate not in self.cardinality_constraints_binary.keys() or eval(f"{cardinality_query} {self.cardinality_constraints_binary[self.query_predicate][0]} {self.cardinality_constraints_binary[self.query_predicate][1]}"):
-                    new_cardinality_constraints_binary = self.cardinality_constraints_binary.copy()
-                    new_cardinality_constraints_binary[self.query_predicate] = ('=', cardinality_query)
-                    formula_query = Formula(self.expression, self.axiom, self.axiom_predicate, cardinality_constraints_binary=new_cardinality_constraints_binary)
-                    #formula_query_axiom = Formula(self.expression, self.axiom, self.axiom_predicate, {self.query_predicate+'x': cardinality_query}) #cardinality_constraints_binary=self.cardinality_constraints_binary)
-                    value = float(sympy.Rational(WFOMC(language, formula_query, n)/total))
-                    #value_axiom = float(sympy.Rational(WFOMC(language, formula_query_axiom, n)/total_axiom))
+                    if (self.axiom != 'forest' or cardinality_query < 2*n) and (self.axiom != 'connected' or cardinality_query > 2*n-3):
+                        print(cardinality_query)
+                        new_cardinality_constraints_binary = self.cardinality_constraints_binary.copy()
+                        new_cardinality_constraints_binary[self.query_predicate] = ('=', cardinality_query)
+                        formula_query = Formula(self.expression, self.axiom, self.axiom_predicate, cardinality_constraints_binary=new_cardinality_constraints_binary)
+                        #formula_query_axiom = Formula(self.expression, self.axiom, self.axiom_predicate, {self.query_predicate+'x': cardinality_query}) #cardinality_constraints_binary=self.cardinality_constraints_binary)
+                        value = float(sympy.Rational(WFOMC(language, formula_query, n)/total))
+                        #value_axiom = float(sympy.Rational(WFOMC(language, formula_query_axiom, n)/total_axiom))
+                    else:
+                        value = 0
                 else:
                     value = 0
                 values_list.append(value)
@@ -183,6 +228,11 @@ class MLN_experiment:
         _ = WFOMC(language, formula_axiom, n)
         return timeit.default_timer()-start_time
 
+
+
+def expected_value(probabilities):
+    values = np.arange(0, probabilities.shape[1])
+    return np.dot(probabilities, values)
 
 
 def runtime_experiment(MLNs, n):
@@ -230,12 +280,13 @@ def plot_runtimes(values_array, experiment_name, legend, title=False):
 
 
 def produce_plot_title(weights, n, predicates_to_rescale=[]):
+    #plt.rcParams['text.usetex'] = True
     str_list=[]
     for k, v in weights.items():
         if k in predicates_to_rescale:
-            str_list.append(f'w_{k} = {v[0]:.1f}\n')
+            str_list.append(f'$w_{k}$ = {v[0]:.1f}\n')
         else:
-            str_list.append(f'w_{k} = {v[0]:.1f}')
+            str_list.append(f'$w_{k}$ = {v[0]:.1f}')
     str_weights = ',   '.join(str_list)
     if predicates_to_rescale:
         return f'DA-MLN; n={n}; \n' + str_weights
@@ -254,7 +305,7 @@ def bar_plot(values_array, experiment_name, legend, weights, query_predicate, ti
     for i,item_legend in enumerate(legend):
         plt.bar(x_new+i*width, values_array[:, i], width, label=item_legend)
     if title:
-        plt.title(produce_plot_title(weights, n, predicates_to_rescale), fontsize=fontsize)
+        plt.title(produce_plot_title(weights, n, predicates_to_rescale), fontsize='x'+fontsize)
     if y_lim is not None:
         plt.ylim(0,y_lim)
     plt.xlabel('m', fontsize=fontsize)
@@ -292,9 +343,35 @@ def alternative_plot(values_array, n, experiment_name, legend, weights, query_pr
     plt.tight_layout()
     plt.savefig(f'plots/{experiment_name}_{n}_{weights}.png')
 
-def runtime_connected(n):
-    experiment_name = 'connected_all'
-    MLN_hard = MLN_experiment('hard-connected', {'S': (0, 0), 'F': (-log(8), 0), 'R': (log(20), 0)})
+
+def plot_expected_values(values_array, n, starting_n, experiment_name, legend, weights, query_predicate, title=False, only_even=False):
+    fontsize = 'x-large'
+    fontsize_legend = 'x-large'
+    plt.close('all')
+    x = np.arange(starting_n, n+1)
+    for i,item_legend in enumerate(legend):
+        plt.plot(x, values_array[:, i], label=item_legend)
+    if title:
+        plt.title(produce_plot_title(weights, n), fontsize=fontsize)
+    #plt.plot(x, values_array[:, 0], label=f'Without {self.axiom} axiom', color='C0')
+    #plt.plot(x, values_array[:, 1], label=f'With {self.axiom} axiom', color='C1')
+    if only_even:
+        scaling = '/2'
+    else:
+        scaling = ''
+    plt.xlabel('domain size', fontsize=fontsize)
+    plt.ylabel(f'E[|{query_predicate}|{scaling}]', fontsize=fontsize)
+    #plt.xticks(x, x)
+    plt.xticks(fontsize=fontsize)
+    plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.yticks(fontsize=fontsize)
+    plt.legend(fontsize=fontsize_legend)  
+    plt.tight_layout()
+    plt.savefig(f'plots/{experiment_name}_{n}_{weights}.png')
+
+def runtime_connected_hard(n):
+    experiment_name = 'smokers-hard'
+    MLN_hard = MLN_experiment('hard-connected', {'S': (0, 0), 'F': (-log(8), 0), 'P': (log(20), 0)})
     #MLN_soft = MLN_experiment('soft-connected', {'S': (0, 0), 'F': (-log(3), 0), 'R': (log(3), 0), 'Z': (log(3), 0)})
     MLN_baseline1 = MLN_hard.without_axiom({})
     MLN_baseline2 = MLN_hard.without_axiom({'F': ('>', 2*n-3)})
@@ -304,9 +381,20 @@ def runtime_connected(n):
     np.save(f'results/{experiment_name}.npy', values_array)
     plot_runtimes(values_array, experiment_name, legend)
 
+def runtime_connected(n):
+    experiment_name = 'connected_all'
+    MLN_hard = MLN_experiment('hard-connected', {'S': (0, 0), 'F': (-log(8), 0), 'P': (log(20), 0)})
+    MLN_soft = MLN_experiment('soft-connected', {'S': (0, 0), 'F': (-log(8), 0), 'P': (log(20), 0), 'Z': (log(8), 0)})
+    MLN_baseline1 = MLN_hard.without_axiom({})
+    MLN_baseline2 = MLN_hard.without_axiom({'F': ('>', 2*n-3)})
+    legend = ['hard-connectivity', '¬F(x,x) ∧ (F(x,y) → F(y,x))', '¬F(x,x) ∧ (F(x,y) → F(y,x)) ∧ |F|/2>n-2', 'soft-connectivity']
+    values_array = runtime_experiment([MLN_hard, MLN_baseline1, MLN_baseline2, MLN_soft], n)
+    np.save(f'results/{experiment_name}.npy', values_array)
+    plot_runtimes(values_array, experiment_name, legend)
+
 def hard_connected(n):
     experiment_name = 'hard-connected'
-    MLN_hard = MLN_experiment('hard-connected', {'S': (0, 0), 'F': (-2, 0), 'R': (2, 0)})
+    MLN_hard = MLN_experiment('hard-connected', {'S': (0, 0), 'F': (-1, 0), 'P': (2, 0)})
     MLN_baseline2 = MLN_hard.without_axiom({'F': ('>', 2*n-3)})
     MLN_baseline1 = MLN_hard.without_axiom()
     legend = ['Connected(F)', '¬F(x,x) ∧ (F(x,y) → F(y,x))', '¬F(x,x) ∧ (F(x,y) → F(y,x)) ∧ |F|/2>n-2']
@@ -319,9 +407,49 @@ def DAG_edges(n):
     MLN_hard = MLN_experiment('DAG-edges', {'R': (-1, 0)})
     #MLN_baseline1 = MLN_hard.without_axiom({'R': ('', n-2)})
     MLN_baseline = MLN_hard.without_axiom()
-    legend = ['DAG(R)', '¬R(x,x) ∧ (R(x,y) → ¬R(y,x))']
+    legend = ['DAG(R)', '¬R(x,x) ∧ (R(x,y) → ¬R(y,x))', 'soft-DAG']
     values_array = query_experiment([MLN_hard, MLN_baseline], n, False, n*(n-1)//2)
     alternative_plot(values_array, n, experiment_name, legend, MLN_hard.weights, 'R', title=False)
+
+def DAG_edges_expectations(n, starting_n = 5):
+    experiment_name = 'DAG-edges-expectations'
+    MLN_hard = MLN_experiment('DAG-edges', {'R': (-1, 0)})
+    #MLN_baseline1 = MLN_hard.without_axiom({'R': ('', n-2)})
+    MLN_soft = MLN_hard.with_soft_constraint()
+    MLN_baseline = MLN_hard.without_axiom()
+    legend = ['DAG(R)', '¬R(x,x) ∧ (R(x,y) → ¬R(y,x))']
+    arrays = []
+    for i in range(starting_n, n+1):
+        exp_values = expected_value(query_experiment([MLN_hard, MLN_baseline, MLN_soft], i, False, i*(i-1)//2).T)
+        print(i, exp_values)
+        arrays.append(exp_values)
+    expectations_array = np.array(arrays)
+    np.save(f'results/{experiment_name}_{n}_{MLN_hard.weights}.npy', expectations_array)
+    plot_expected_values(expectations_array, n, starting_n, experiment_name, legend, MLN_hard.weights, 'R', title=False, only_even=False)
+
+#arr =np.load("results/DAG-edges-expectations_25_{'R': (-1, 0)}.npy")
+#plot_expected_values(arr, 25, 5, 'DAG-edges-expectations', ['DAG(R)', '¬R(x,x) ∧ (R(x,y) → ¬R(y,x))'], {'R': (-1, 0)}, 'R', title=False, only_even=False)
+
+
+
+def DAG_edges_smokers(n):
+    experiment_name = 'DAG-edges-smokers'
+    MLN_hard = MLN_experiment('DAG-edges-smokers',  {'S': (0, 0), 'F': (-1, 0), 'P': (3, 0)})
+    #MLN_baseline1 = MLN_hard.without_axiom({'R': ('', n-2)})
+    MLN_baseline = MLN_hard.without_axiom()
+    legend = ['DAG(R)', '¬F(x,x) ∧ (F(x,y) → ¬F(y,x))']
+    values_array = query_experiment([MLN_hard, MLN_baseline], n, False, n*(n-1)//2)
+    np.save(f'results/{experiment_name}_{n}_{MLN_hard.weights}.npy', values_array)
+    alternative_plot(values_array, n, experiment_name, legend, MLN_hard.weights, 'P', title=False)
+
+def hard_DAG(n):
+    experiment_name = 'hard-DAG'
+    MLN_hard = MLN_experiment('hard-DAG', {'S': (0, 0), 'F': (-2, 0), 'P': (3, 0)})
+    #MLN_baseline2 = MLN_hard.without_axiom({'F': ('>', 2*n-3)})
+    MLN_baseline1 = MLN_hard.without_axiom()
+    legend = ['DAG(F)', '¬F(x,x) ∧ (F(x,y) → ¬F(y,x))']
+    values_array = query_experiment([MLN_hard, MLN_baseline1], n)
+    bar_plot(values_array, experiment_name, legend, MLN_hard.weights, 'S', title=True, y_lim=0.4)
 
 def connected_edges(n):
     experiment_name = 'connected-edges'
@@ -332,6 +460,32 @@ def connected_edges(n):
     values_array = query_experiment([MLN_hard, MLN_baseline, MLN_baseline1], n, False, n*(n-1), True)
     alternative_plot(values_array, n, experiment_name, legend, MLN_hard.weights, 'R', title=False, max_x = int(4.5*n), only_even=True)
 
+def connected_edges_expectations(n, starting_n = 5):
+    experiment_name = 'connected-edges-expectations'
+    MLN_hard = MLN_experiment('connected-edges', {'R': (-1, 0)})
+    MLN_baseline = MLN_hard.without_axiom()
+    MLN_soft = MLN_hard.with_soft_constraint()
+    legend = ['Connected(R)', '¬R(x,x) ∧ (R(x,y) → R(y,x))', '¬R(x,x) ∧ (R(x,y) → R(y,x)) ∧ |R|/2>n-2', 'soft-connectivity']
+    arrays = []
+    for i in range(starting_n, n+1):
+        MLN_baseline1 = MLN_hard.without_axiom({'R': ('>', 2*i-3)})
+        exp_values = expected_value(query_experiment([MLN_hard, MLN_baseline, MLN_baseline1, MLN_soft], i, False, i*(i-1), True).T)
+        print(i, exp_values)
+        arrays.append(exp_values)
+    expectations_array = np.array(arrays)
+    np.save(f'results/{experiment_name}_{n}_{MLN_hard.weights}.npy', expectations_array)
+    plot_expected_values(expectations_array, n, starting_n, experiment_name, legend, MLN_hard.weights, 'R', title=False, only_even=True)
+
+def connected_edges_smokers(n):
+    experiment_name = 'connected-edges-smokers'
+    MLN_hard = MLN_experiment('connected-edges-smokers',  {'S': (0, 0), 'F': (-1, 0), 'P': (3, 0)})
+    MLN_baseline1 = MLN_hard.without_axiom({'F': ('>', 2*n-3)})
+    MLN_baseline = MLN_hard.without_axiom()
+    legend = ['Connected(F)', '¬F(x,x) ∧ (F(x,y) → F(y,x))', '¬F(x,x) ∧ (F(x,y) → F(y,x)) ∧ |F|/2>n-2']
+    values_array = query_experiment([MLN_hard, MLN_baseline, MLN_baseline1], n, False, n*(n-1), True)
+    np.save(f'results/{experiment_name}_{n}_{MLN_hard.weights}.npy', values_array)
+    alternative_plot(values_array, n, experiment_name, legend, MLN_hard.weights, 'F', title=False, max_x = int(4.5*n), only_even=True)
+
 def forest_edges(n):
     experiment_name = 'forest-edges'
     MLN_hard = MLN_experiment('forest-edges', {'R': (-1, 0)})
@@ -341,10 +495,47 @@ def forest_edges(n):
     values_array = query_experiment([MLN_hard, MLN_baseline, MLN_baseline1], n, False, n*(n-1), only_even=True)
     alternative_plot(values_array, n, experiment_name, legend, MLN_hard.weights, 'R', title=False, max_x = int(4.5*n), only_even = True)
 
+def forest_edges_expectations(n, starting_n = 5):
+    experiment_name = 'forest-edges-expectations'
+    MLN_hard = MLN_experiment('forest-edges', {'R': (-1, 0)})
+    MLN_baseline = MLN_hard.without_axiom()
+    legend = ['forest(R)', '¬R(x,x) ∧ (R(x,y) → R(y,x))', '¬R(x,x) ∧ (R(x,y) → R(y,x)) ∧ |R|/2<n']
+    arrays = []
+    for i in range(starting_n, n+1):
+        MLN_baseline1 = MLN_hard.without_axiom({'R': ('<', 2*i-1)})
+        exp_values = expected_value(query_experiment([MLN_hard, MLN_baseline, MLN_baseline1], i, False, i*(i-1), True).T)
+        print(i, exp_values)
+        arrays.append(exp_values)
+    expectations_array = np.array(arrays)
+    np.save(f'results/{experiment_name}_{n}_{MLN_hard.weights}.npy', expectations_array)
+    plot_expected_values(expectations_array, n, starting_n, experiment_name, legend, MLN_hard.weights, 'R', title=False, only_even=True)
+
+def forest_edges_smokers(n):
+    experiment_name = 'forest-edges-smokers'
+    MLN_hard = MLN_experiment('forest-edges-smokers',  {'S': (0, 0), 'F': (-1, 0), 'P': (3, 0)})
+    MLN_baseline1 = MLN_hard.without_axiom({'F': ('<', 2*n-1)})
+    MLN_baseline = MLN_hard.without_axiom()
+    legend = ['Forest(F)', '¬F(x,x) ∧ (F(x,y) → F(y,x))', '¬F(x,x) ∧ (F(x,y) → F(y,x)) ∧ |F|/2<n']
+    values_array = query_experiment([MLN_hard, MLN_baseline, MLN_baseline1], n, False, n*(n-1), True)
+    alternative_plot(values_array, n, experiment_name, legend, MLN_hard.weights, 'F', title=False, max_x = int(4.5*n), only_even=True)
+
+def hard_forest(n):
+    experiment_name = 'hard-forest'
+    MLN_hard = MLN_experiment('hard-forest', {'S': (0, 0), 'F': (-2, 0), 'P': (3, 0)})
+    MLN_baseline2 = MLN_hard.without_axiom({'F': ('<', 2*n-1)})
+    MLN_baseline1 = MLN_hard.without_axiom()
+    legend = ['Forest(F)', '¬F(x,x) ∧ (F(x,y) → F(y,x))', '¬F(x,x) ∧ (F(x,y) → F(y,x)) ∧ |F|/2<n']
+    values_array = query_experiment([MLN_hard, MLN_baseline1, MLN_baseline2], n)
+    np.save(f'results/{experiment_name}_{n}_{MLN_hard.weights}.npy', values_array)
+    bar_plot(values_array, experiment_name, legend, MLN_hard.weights, 'S', title=True, y_lim=0.4)
+
+def plot_bar(experiment_name, legend, weights, query, n, title=True, y_lim=0.4):
+    values_array = np.load(f'results/{experiment_name}_{n}_{weights}.npy')
+    bar_plot(values_array, experiment_name, legend, weights, query, title=title, y_lim=y_lim)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--n', default=12, type=int)
+    parser.add_argument('--n', default=20, type=int)
     parser.add_argument('--function', default='hard_connected', type=str, help='function to be tested')
     #parser.add_argument('--runtime', action='store_true')
     args = parser.parse_args()
